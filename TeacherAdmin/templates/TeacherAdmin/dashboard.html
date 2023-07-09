@@ -1,0 +1,13 @@
+{% extends 'TeacherAdmin/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'TeacherAdmin/styles/dash.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main">
+    <h1>Welcome <span>@{{user.username}}</span> .</h1>
+</div>
+{% endblock %}

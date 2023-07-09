@@ -1,0 +1,16 @@
+.content h1{
+    text-align: center;
+    color: rgb(255, 255, 255);
+}
+.content .main  form label{
+    color: var(--yellow);
+    font-size: 1rem;
+}
+.content .main  form input, .content .main  form textarea{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.content .main{
+    background-color: #54545420;
+    padding: 50px;
+    border-radius: 20px;
+}

@@ -1,0 +1,12 @@
+{% extends 'validator/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Signup Page {% endblock %}
+{% block content%}
+<div class="mx-5">
+    <form method="post" >
+        {% csrf_token %}
+        {{SigninForm|crispy}}
+        <button type="submit" class="btn btn-success">Sign Up</button>
+    </form>
+</div>
+{% endblock %}
