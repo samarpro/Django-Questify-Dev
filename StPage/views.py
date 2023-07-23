@@ -16,7 +16,7 @@ def WordFileHandler(FilePath,Quesno):
     BASE_DIR = Path(__file__).resolve().parent.parent
     ANS_LIST = []
     PARSE_DICT ={}
-    ActPath= f"{BASE_DIR}\media/{FilePath}"
+    ActPath= f"{BASE_DIR}/media/{FilePath}"
     doc = Document(ActPath)
     paraObj = doc.paragraphs
     noPara = len(paraObj)
@@ -62,12 +62,14 @@ def StLogin(req):
         'form':form,
         'err':err
     }
-    return render(req,"StPage/index.html",context)
+    return render(req,"Stpage/index.html",context)
 
 # Institute code is for sure valid because of FiltUser.exists()
 def QuesHandler(req,InstituteCode):
     global STUDENT_CHECKED;
     if STUDENT_CHECKED == True:
+        SessStName = req.session.get('StName')
+        student_id = StInfoModels.objects.get(Name=SessStName).id #type:ignore
         # first_name in database = Institute code
         userName= User.objects.filter(first_name=InstituteCode)[0]
         AdminInfo=userName.admininfo_set.all()[0] # type:ignore
@@ -80,6 +82,9 @@ def QuesHandler(req,InstituteCode):
             "MAIN_DICT":Main_Dict,
             "ANS":json.dumps(Main_Dict['Answers']),
             "counter":1,
+            "Student_Name":SessStName, # !#%--!#% these are yet to be display in front end
+            "Student_id": student_id
+
         }
         STUDENT_CHECKED=False
         return render(req,"StPage/QuesPap.html",context=context)
@@ -87,6 +92,8 @@ def QuesHandler(req,InstituteCode):
         return redirect(StLogin)
 
 from django.http import HttpResponse
+# This block of code handles teh favicon error
+# that occurs when django searche for favicon by default.
 def empty_favicon_view(request):
     return HttpResponse(status=204)
 
@@ -96,6 +103,7 @@ def Submition(req):
     StName = req.session.get('StName')
     print(StName)
     StObj=StInfoModels.objects.filter(Name=StName,Touched_Status=False)[0]
+    print(StObj)
     StObj.MarksAch=int_data
     StObj.save()
     return redirect("/")
