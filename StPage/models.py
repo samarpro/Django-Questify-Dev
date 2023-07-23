@@ -6,13 +6,15 @@ class StInfoModels(models.Model):
         (1,"Science"),
         (2,"Management")
     ]
-    # Admin Institution code
+    # User->Admin_Name
     User = models.ForeignKey(User,on_delete=models.CASCADE)
     Name = models.CharField(max_length=100)
     Stream = models.IntegerField(choices=Choice)
+    # Admin Institution code
     AdInsCode = models.CharField(max_length=10)
     # Marks Acheived
     MarksAch = models.IntegerField(null=True,default=0)
+    Touched_Status = models.BooleanField(default=False)
 
 
 

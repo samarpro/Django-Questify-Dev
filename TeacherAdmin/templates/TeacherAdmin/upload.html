@@ -3,7 +3,24 @@
 {% load crispy_forms_tags %}
 {% block title %}Q-Upload{% endblock %}
 {% block css %}
-<link rel="stylesheet" href="{% static 'TeacherAdmin/styles/upload.css' %}">
+<style>
+    .content h1{
+        text-align: center;
+        color: rgb(255, 255, 255);
+    }
+    .content .main  form label{
+        color: var(--yellow);
+        font-size: 1rem;
+    }
+    .content .main  form input, .content .main  form textarea{
+        font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    }
+    .content .main{
+        background-color: #54545420;
+        padding: 50px;
+        border-radius: 20px;
+    }
+</style>
 {% endblock %}
 {% block content%}
 <div class="content">

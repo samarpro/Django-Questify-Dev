@@ -3,12 +3,17 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User 
 from .forms import AdminInfoForms
 from .models import AdminInfo
-from docx import Document
 from pathlib import Path
-
+from StPage.models import StInfoModels
 # Create your views here.
 def dashboard(req):
-    context={}
+    user=req.user
+    List_St = StInfoModels.objects.filter(User=user)
+    AdminUser = AdminInfo.objects.get(user=user)
+    context={
+        "ListSt":List_St,
+        "PMarks": AdminUser.PASSMARKS,
+        }
     return render(req,"TeacherAdmin/dashboard.html",context)
 
 def uploadInfo(req):
@@ -24,7 +29,7 @@ def uploadInfo(req):
             pmarks= form.cleaned_data['PASSMARKS']
             file=form.cleaned_data['FILENAME']
             addtext= form.cleaned_data['ADDTEXT']
-            ActUser = User.objects.get(username=username)
+            # ActUser = User.objects.get(username=username)
             Obj = AdminInfo(user=username,INSNAME=InsName,FULLMARKS=fmarks,PASSMARKS=pmarks,FILENAME=file,ADDTEXT=addtext)
             Obj.save()
             msg = "Online Exam Successfully Created."

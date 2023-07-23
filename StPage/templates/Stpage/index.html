@@ -24,11 +24,12 @@
             margin: -20px 0 50px;
         }
 
-        h1{
+        h1 {
             font-weight: bold;
             margin: 0;
         }
-        .heading{
+
+        .heading {
             font-weight: bold;
             margin: 0;
             font-family: 'Orbitron', sans-serif;
@@ -104,6 +105,7 @@
             box-shadow: 10px 8px 5px #FF416C;
             transition: 0.5s ease;
         }
+
         input:hover {
             border-radius: 5px;
             box-shadow: 1px 1px #FF416C;
@@ -179,7 +181,7 @@
             z-index: 100;
         }
 
-    
+
 
         .overlay {
             background: #FF416C;
@@ -232,10 +234,12 @@
         .container.right-panel-active .overlay-right {
             transform: translateX(20%);
         }
-        label{
+
+        label {
             font-weight: bold;
         }
-        select{
+
+        select {
             margin-top: 10px;
             text-align: center;
             width: 200px;
@@ -247,10 +251,41 @@
             box-shadow: 10px 10px #FF416C;
             transition: 0.5s ease;
         }
+
         select:hover {
             border-radius: 5px;
             box-shadow: 1px 1px #FF416C;
 
+        }
+
+        .error-notice {
+            margin: 5px;
+            /* Make sure to keep some distance from all sides */
+            position: absolute;
+            top: 70px;
+        }
+
+        .oaerror {
+            width: 80%;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-left-width: 5px;
+            border-radius: 3px;
+            margin: 10px auto;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+        }
+
+        .danger {
+            border-left-color: #d9534f;
+            /* Left side border color */
+            background-color: rgba(217, 83, 79, 0.1);
+            /*Same color as the left border with reduced alpha to 0.1*/
+        }
+
+        .danger strong {
+            color: #d9534f;
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,27 +295,36 @@
 </head>
 
 <body>
-    <h2>Welcome to Our Online Exam Platform</h2>
-    <div class="container" id="container">
-        <div class="form-container sign-in-container">
-            <form method="POST">
-                <h1>Log In</h1>
-                <span>Enter your credentials</span>
-                {% csrf_token %}
-                {{form.as_p}}
-                <button type="submit">Next</button>
-            </form>
+    {% if err %}
+    <div class="error-notice">
+        <div class="oaerror danger">
+            <strong>Error</strong>-{{err}}
         </div>
-        <div class="overlay-container">
-            <div class="overlay">
-                <div class="overlay-panel overlay-right">
-                    <h1 class="heading">Questify</h1>
-                    <p>Welcome to Our Online Exam Platform: Empowering Your Success Through Convenient and Secure Online Testing</p>
-                    <button class="ghost" id="signUp">Continue</button>
+        {% else%}
+        <span></span>
+        {% endif %}
+        <h2>Welcome to Our Online Exam Platform</h2>
+        <div class="container" id="container">
+            <div class="form-container sign-in-container">
+                <form method="POST">
+                    <h1>Log In</h1>
+                    <span>Enter your credentials</span>
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button type="submit">Next</button>
+                </form>
+            </div>
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-right">
+                        <h1 class="heading">Questify</h1>
+                        <p>Welcome to Our Online Exam Platform: Empowering Your Success Through Convenient and Secure
+                            Online Testing</p>
+                        <button class="ghost" id="signUp">Continue</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </body>
 
 </html>

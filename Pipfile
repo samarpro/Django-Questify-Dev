@@ -7,6 +7,7 @@ name = "pypi"
 django = "*"
 python-docx = "*"
 crispy-bootstrap5 = "*"
+unidecode = "*"
 
 [dev-packages]
 
