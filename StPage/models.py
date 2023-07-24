@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from validator.models import CustomUser
 # Create your models here.
 class StInfoModels(models.Model):
     Choice = [
@@ -7,7 +7,7 @@ class StInfoModels(models.Model):
         (2,"Management")
     ]
     # User->Admin_Name
-    User = models.ForeignKey(User,on_delete=models.CASCADE)
+    User = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     Name = models.CharField(max_length=100)
     Stream = models.IntegerField(choices=Choice)
     # Admin Institution code
@@ -18,6 +18,6 @@ class StInfoModels(models.Model):
 
 
     def __str__(self):
-        return self.Name
+        return f"{self.id} - {self.Name}" #type:ignore
 
 

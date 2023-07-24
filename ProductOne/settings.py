@@ -136,6 +136,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+# Changing default user model to validator.CustomUser
+AUTH_USER_MODEL = 'validator.CustomUser'
 # STATISFILES_DIRS = (
 #     BASE_DIR / 'ASSETS'
 # )

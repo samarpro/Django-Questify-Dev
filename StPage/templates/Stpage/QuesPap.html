@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -117,14 +119,39 @@
         <div class="marks">
             <p class="fmarks">Full Marks: {{fullMarks}}</p>
             <p class="pmarks">Pass Marks: {{passMarks}}</p>
+            <p>Student Name: {{Student_Name}}</p>
+            <p> Unique ID: {{Student_id}}</p>
         </div>
         <h2 class="heading">{{addtext}}</h2>
     </div>
     <div class="content-form">
         <div class="form">
             <form id="questionForm">
+                <span>{{MAIN_DICT}} <br><br> {{ Image_Dict }}</span>
                 {% for ques,options in MAIN_DICT.items %}
                 {% if ques != 'Answers' %}
+                {% if forloop.counter in Image_Dict%}
+                {% with counter=forloop.counter %}
+                <h3><span>{{forloop.counter}}.</span> {{ques}} </h3>
+                <label>
+                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="0">
+                    <span>{{options.0}}</span>
+                </label>
+                <label>
+                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="1">
+                    <span>{{options.1}}</span>
+                </label>
+                <label>
+                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="2">
+                    <span>{{options.2}}</span>
+                </label>
+                <label>
+                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="3">
+                    <span>{{options.3}}</span>
+                </label>
+                {% endwith %}
+                {% else%}
+                <!-- Else part -->
                 <h3><span>{{forloop.counter}}.</span> {{ques}}</h3>
                 <label>
                     <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="0">
@@ -143,6 +170,7 @@
                     <span>{{options.3}}</span>
                 </label>
                 {% endif %}
+                {% endif %}
                 {% endfor %}
                 <button type="submit">Submit</button>
             </form>
@@ -151,12 +179,12 @@
     </div>
     <script>
         var correctAnswers = {{ ANS }};
-
+        console.log(correctAnswers)
         document.getElementById('questionForm').addEventListener('submit', function (e) {
             e.preventDefault();
             var MARKS_OBTAINED = 0;
             var counter = 1;
-            var fullMarks = {{ fullMarks }};
+            var fullMarks = {{ fullMarks }}; // type:ignore
             var selectedOption;
 
             while (fullMarks >= counter) {
@@ -168,7 +196,7 @@
             }
             console.log(MARKS_OBTAINED);
             BIN_DATA = MARKS_OBTAINED.toString(2);    
-            window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA));
+            // window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA));
         });
     </script>
 </body>

@@ -27,35 +27,39 @@
 <div class="main">
     <h1>Welcome <span class="span">@{{user.username}}</span> .</h1>
     <br>
-    <table class="table table-dark">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Stream</th>
-            <th>Marks</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in ListSt %}
-            <tr class="table-dark">
-              <td>{{ item.Name }}</td>
-              {% if item.Stream == 1 %}
-              <td>Science</td>
-              {% else %}
-              <td>Management</td>
-              {% endif %}
-              <td>{{ item.MarksAch }}</td>
-              {% if item.MarksAch >= PMarks %}
-              <td><span class="badge bg-success">Pass</span></td>
-              {% else %}
-              <td><span class="badge rounded-pill bg-danger">Fail</span>
-              </td>
-              {% endif %}
+    {% if Student_exists_msg is not None %}
+      <table class="table table-dark">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Stream</th>
+              <th>Marks</th>
+              <th>Remarks</th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for item in ListSt %}
+              <tr class="table-dark">
+                <td>{{ item.Name }}</td>
+                {% if item.Stream == 1 %}
+                <td>Science</td>
+                {% else %}
+                <td>Management</td>
+                {% endif %}
+                <td>{{ item.MarksAch }}</td>
+                {% if item.MarksAch >= PMarks %}
+                <td><span class="badge bg-success">Pass</span></td>
+                {% else %}
+                <td><span class="badge rounded-pill bg-danger">Fail</span>
+                </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    {% else %}
+      <h1>No Student User</h1>
+    {% endif %}
       
 </div>
 {% endblock %}

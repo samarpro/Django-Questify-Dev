@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from validator.models import CustomUser
 
 # Create your models here.
 
@@ -8,7 +8,7 @@ def default_images_dict():
     return {}
 
 class AdminInfo(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     # defining all other necessary fields
     INSNAME = models.CharField(max_length=250) # not ins code
     FULLMARKS = models.IntegerField()
