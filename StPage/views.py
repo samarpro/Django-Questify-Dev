@@ -6,6 +6,7 @@ from docx import Document
 from random import sample
 from pathlib import Path
 import json
+from django.conf import settings
 from .models import StInfoModels
 
 # Create your views here.
@@ -33,7 +34,7 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
         num_String = str(num) 
         if  num_String in Image_Dict:
             """if para num -> num exists in IMAGE_DICT Add that in a dict which is inside a dict"""
-            IMAGE_DICT_SRTLIST[index+1]={"Question":Image_Dict[num_String],"Option":dict({})}
+            IMAGE_DICT_SRTLIST[index+1]={"Question":Image_Dict[num_String],"Option":[]}
         # used ot make sure that if any question's option are not bold then error doesn't occur
         Default_append=True
         for opNum in optionRandomList:
@@ -42,9 +43,7 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
             # if image is in Image dictioanry and para num is also created
             # This means both question and answers require images
             if OptionParaNum_string in Image_Dict and  index+1 in IMAGE_DICT_SRTLIST:
-                print(Image_Dict)
-                print(f"opNum:{opNum}.... optionParaNum:{OptionParaNum_string}...num:{num}")
-                IMAGE_DICT_SRTLIST[index+1]["Option"][opNum] = Image_Dict[OptionParaNum_string]
+                IMAGE_DICT_SRTLIST[index+1]["Option"].append(Image_Dict[OptionParaNum_string])
             # This condition means question doesn't require  images but options does
             elif index+1 not in IMAGE_DICT_SRTLIST and OptionParaNum_string in Image_Dict:
                 # the opNum also indicates the index of the option . 
@@ -52,7 +51,7 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
                 # like 0-> image1.png
                 # 1->image2.png
                 # so we require its index number.
-                IMAGE_DICT_SRTLIST[index+1] = {"Question":None,"Option":{opNum:Image_Dict[OptionParaNum_string]}}
+                IMAGE_DICT_SRTLIST[index+1] = {"Question":None,"Option":[Image_Dict[OptionParaNum_string]]}
                 # If Option is empty then it means no option require Images.
 
             optionObject = paraObj[OptionParaNum] 
@@ -123,6 +122,7 @@ def QuesHandler(req,InstituteCode):
                     "Student_Name":SessStName, # !#%--!#% these are yet to be display in front end
                     "Student_id": student_id,  # !#%--!#% these are yet to be display in front end,
                     "Image_Dict": Images_Dict ,
+                    "MEDIA_ROOT":settings.MEDIA_URL,
                 }
                 req.session['STUDENT_CHECKED']=False
                 req.session.save()

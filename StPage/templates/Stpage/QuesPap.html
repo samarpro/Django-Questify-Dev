@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -129,48 +129,58 @@
             <form id="questionForm">
                 <span>{{MAIN_DICT}} <br><br> {{ Image_Dict }}</span>
                 {% for ques,options in MAIN_DICT.items %}
-                {% if ques != 'Answers' %}
-                {% if forloop.counter in Image_Dict%}
-                {% with counter=forloop.counter %}
-                <h3><span>{{forloop.counter}}.</span> {{ques}} </h3>
-                <label>
-                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="0">
-                    <span>{{options.0}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="1">
-                    <span>{{options.1}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="2">
-                    <span>{{options.2}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="3">
-                    <span>{{options.3}}</span>
-                </label>
-                {% endwith %}
-                {% else%}
-                <!-- Else part -->
-                <h3><span>{{forloop.counter}}.</span> {{ques}}</h3>
-                <label>
-                    <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="0">
-                    <span>{{options.0}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="1">
-                    <span>{{options.1}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="2">
-                    <span>{{options.2}}</span>
-                </label>
-                <label>
-                    <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="3">
-                    <span>{{options.3}}</span>
-                </label>
-                {% endif %}
-                {% endif %}
+                    {% if ques != 'Answers' %}
+                        {% if forloop.counter in Image_Dict%}
+                            {% with counter=forloop.counter  text="Question" %}
+                                {% set_value Image_Dict|get_dict_value_ques:counter as img_name %}
+                                <!-- if image exists for question  -->
+                                <!-- show image  -->
+                                {% if img_name is not None %}
+                                    <h3><span>{{counter}}.</span> {{ques}} &nbsp <img src="{% get_media_prefix %}Admin_Images/{{img_name}}"> </h3>
+                                <!-- else : No need to render image tag -->
+                                {%else%}
+                                    <h3><span>{{counter}}.</span> {{ques}}</h3>
+                                {%endif%}
+                                
+                                <label>
+                                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="0">
+                                    <span>{{options.0}} <img src="{% get_media_prefix %}Admin_Images/{% get_dict_value_option Image_Dict counter 0 %}" alt=""></span>
+
+                                </label>
+                                <label>
+                                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="1">
+                                    <span>{{options.1}}<img src="{% get_media_prefix %}Admin_Images/{% get_dict_value_option Image_Dict counter 1 %}" alt=""></span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="2">
+                                    <span>{{options.2}} <img src="{% get_media_prefix %}Admin_Images/{% get_dict_value_option Image_Dict counter 2 %}" alt=""></span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="ques{{counter}}" class="btn-radio" value="3">
+                                    <span>{{options.3}}<img src="{% get_media_prefix %}Admin_Images/{% get_dict_value_option Image_Dict counter 3 %}" alt=""></span>
+                                </label>
+                            {% endwith %}
+                        {%    else%}
+                            <!-- Else part -->
+                            <!-- <h3><span>{{forloop.counter}}.</span> {{ques}}</h3>
+                            <label>
+                                <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="0">
+                                <span>{{options.0}}</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="1">
+                                <span>{{options.1}}</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="2">
+                                <span>{{options.2}}</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="ques{{forloop.counter}}" class="btn-radio" value="3">
+                                <span>{{options.3}}</span>
+                            </label> -->
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
                 <button type="submit">Submit</button>
             </form>
