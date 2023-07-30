@@ -1,6 +1,7 @@
 {% extends 'TeacherAdmin/base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+{% load custom_filters_teacherAdmin %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block css %}
 
@@ -25,41 +26,59 @@
 
 {% block content %}
 <div class="main">
-    <h1>Welcome <span class="span">@{{user.username}}</span> .</h1>
-    <br>
-    {% if Student_exists_msg is not None %}
-      <table class="table table-dark">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Stream</th>
-              <th>Marks</th>
-              <th>Remarks</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in ListSt %}
-              <tr class="table-dark">
-                <td>{{ item.Name }}</td>
-                {% if item.Stream == 1 %}
-                <td>Science</td>
-                {% else %}
-                <td>Management</td>
-                {% endif %}
-                <td>{{ item.MarksAch }}</td>
-                {% if item.MarksAch >= PMarks %}
-                <td><span class="badge bg-success">Pass</span></td>
-                {% else %}
-                <td><span class="badge rounded-pill bg-danger">Fail</span>
+    <h1>Welcome <span class="span">@{{user.username}}</span> .</h1>    
+    <table class="table table-dark">
+        <thead>
+          <tr>
+            <th>S.N</th>
+            <th>Class</th>
+            <th>File Deployed</th>
+            <th>Portal Start</th>
+            <th>Portal End</th>
+            <th>Manage</th>
+          </tr>
+        </thead>
+        <tbody>
+    {% for object in AdminInfo_objects reversed%}
+            <tr class="table-dark row{{object.id}}">
+                <td>{{forloop.counter}}</td>
+                <td>Grade {{ object.FOR_CLASS }}</td>
+                <td>{{ object.FILENAME|split:"/" }}</td>
+                <td>{{ object.Start_time}}</td>
+                <td>{{ object.End_time}}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" 
+                    onclick="window.location.href = 'edit/{{object.id}}'"  >EDIT</button> &nbsp
+                    <button type="button" class="btn btn-danger delete-btn" data-row_btn_id={{object.id}}>Delete</button>
                 </td>
-                {% endif %}
-              </tr>
+            </tr>
             {% endfor %}
-          </tbody>
-        </table>
-    {% else %}
-      <h1>No Student User</h1>
-    {% endif %}
-      
+        </tbody>
+    </table>
 </div>
+
+<script> 
+
+    function delete_row(row_id){
+        fetch(`delete-row/${row_id}`,{
+            method:"DELETE",
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            }
+        }).then(resp=>resp.json())
+        .then(data=>{
+            if (data.msg==true){
+                document.querySelector(`.row${row_id}`).remove()
+                console.log("Deleeted")
+            }
+        })
+    }
+
+    document.querySelectorAll(".delete-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+            const rowId = btn.dataset.row_btn_id
+            delete_row(rowId)
+        })
+    })
+</script>
 {% endblock %}

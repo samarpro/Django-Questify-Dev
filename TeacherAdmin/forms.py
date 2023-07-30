@@ -1,5 +1,4 @@
 from django import forms
-from .models import AdminInfo
 
 
 # {{forms.name|add_label_class}}
@@ -9,6 +8,7 @@ class AdminInfoForms(forms.Form):
         max_length=250,
         widget=forms.TextInput(attrs={'class': 'form-control'}),
         label="Institute Name")
+    FOR_CLASS = forms.IntegerField(label="For Grade",widget=forms.NumberInput(attrs={'class': 'form-control'}))
     FULLMARKS = forms.IntegerField( widget=forms.NumberInput(attrs={'class': 'form-control'}))
     PASSMARKS = forms.IntegerField( widget=forms.NumberInput(attrs={'class': 'form-control'}))
     FILENAME = forms.FileField(widget=forms.FileInput(attrs={'class': 'form-control'}),
@@ -16,7 +16,5 @@ class AdminInfoForms(forms.Form):
     ADDTEXT =forms.CharField(max_length=500,
     widget=forms.TextInput(attrs={'class': 'form-control'}),
     label="Additional Text")
-
-    class Meta():
-        model = AdminInfo
-        fields =["INSNAME","FULLMARKS","PASSMARKS","FILENAME","ADDTEXT"]
+    Start_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'class': 'form-control','type':"datetime-local"}) )
+    End_time = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'class': 'form-control','type':"datetime-local"}),)

@@ -10,7 +10,6 @@ def get_dict_value_ques(dictionary,key):
 
 @register.simple_tag
 def get_dict_value_option(dictionary,key,ind):
-    print("one")
     if len(dictionary[key]['Option'])<1:
         return None
     else:

@@ -15,6 +15,7 @@ class StInfoModels(models.Model):
     # Marks Acheived
     MarksAch = models.IntegerField(null=True,default=0)
     Touched_Status = models.BooleanField(default=False)
+    Grade = models.IntegerField(default=0)
 
 
     def __str__(self):
