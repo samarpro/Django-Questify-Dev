@@ -27,7 +27,7 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
 
         # random list of question no
         randomList = sample(range(0,actNoPara,5),Quesno)
-        for index,num in enumerate(randomList):
+        for index,num in enumerate(randomList): 
             paraText = paraObj[num].text
             # random list for option no
             optionRandomList=sample(range(1,5),4)
@@ -76,6 +76,7 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
 
 def StLogin(req):
     req.session['StName'] = req.POST.get('Name')
+    req.session["Grade"]= req.POST.get('Grade')
     err=""
     if req.method =="POST":
         form = StLoginForm(req.POST)
@@ -107,8 +108,7 @@ def StLogin(req):
 # Institute code is for sure valid because of FiltUser.exists()
 def QuesHandler(req,InstituteCode,Grade):
     # STUDENT_CHECKED ensures that one student cannot give exam twice by 
-    # if req.session.get('STUDENT_CHECKED',False) == True:
-    if True:
+    if req.session.get('STUDENT_CHECKED',False) == True:
         # seesion var set in StLogin
         SessStName = req.session.get('StName')
         # first_name in database = Institute code
@@ -116,8 +116,13 @@ def QuesHandler(req,InstituteCode,Grade):
         # this process consumes a liitle more resoources
         # since we first grab user from CustomUser then navigate to its corresponding AdminInfo
         # we could have directly used AdminInFo Module
-        userName= CustomUser.objects.filter(first_name=InstituteCode)[0]
-        AdminInfo=userName.admininfo_set.filter(FOR_CLASS=Grade).last()  # type:ignore
+        userName= CustomUser.objects.filter(first_name=InstituteCode).last() # this last doesn't make sense cuz first_name is also unique
+        # userName is user object
+        if Grade in userName.active_portals: #type:ignore
+            AdminInfo=userName.admininfo_set.get(id=[req.session[str(Grade)]]) #type:ignore
+        else:
+            AdminInfo=userName.admininfo_set.filter(FOR_CLASS=Grade).last()  # type:ignore
+
         if AdminInfo is not None: 
             # checking wheather or not student is with in Required time stamp
             # time of the instant shen student tried to login
@@ -144,6 +149,7 @@ def QuesHandler(req,InstituteCode,Grade):
                             "Student_id": student_id,  # !#%--!#% these are yet to be display in front end,
                             "Image_Dict": Images_Dict ,
                             "MEDIA_ROOT":settings.MEDIA_URL,
+                            "InsCode":InstituteCode
                         }
                         req.session['STUDENT_CHECKED']=False
                         req.session.save()
@@ -187,9 +193,24 @@ def empty_favicon_view(request):
 
 def Submition(req):
     Bin_data=req.GET.get('data')
+    InsCode = req.GET.get('inscode')
     int_data=int(Bin_data,2)
     StName = req.session.get('StName')
+    Grade = req.session['Grade'] 
     StObj=StInfoModels.objects.filter(Name=StName,Touched_Status=False)[0]
     StObj.MarksAch=int_data
+    # since firstname is also unique, using last or not using doesn't matter
+    user_obj = CustomUser.objects.filter(first_name=InsCode).last() #type:ignore
+    user_obj_activePortal_db = user_obj.active_portals #type:ignore
+    if Grade in user_obj_activePortal_db:
+        Admin_set_passmarks = user_obj.admininfo_set.get(id=user_obj_activePortal_db[Grade]).PASSMARKS  # type:ignore 
+    else:
+        Admin_set_passmarks = user_obj.admininfo_set.last().PASSMARKS  # type:ignore 
+         
+    if int_data >= Admin_set_passmarks:
+        StObj.Pass = True
+    else:
+        StObj.Pass = False
     StObj.save()
-    return HttpResponseRedirect("/")
+    # return HttpResponseRedirect("/")
+    return HttpResponseRedirect("")

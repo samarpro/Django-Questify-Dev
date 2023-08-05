@@ -117,6 +117,15 @@ USE_I18N = True
 USE_TZ = True
 
 
+# session chnages to store anoynomous user
+SESSION_COOKIE_NAME = 'your_session_cookie_name'  # Replace 'your_session_cookie_name' with your desired cookie name
+SESSION_COOKIE_SECURE = False  # Set to True if you're using HTTPS, False for development
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 60 * 60 * 4  # Session expiration time in seconds (e.g., 7 days)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True if you want the session to expire when the user closes the browser
+
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 

@@ -27,11 +27,32 @@
 <div class="main">
     <h1>Hey, <span class="span">@{{user.username}}</span> .</h1>
     <br>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark m-4">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Questify</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <select class="form-select" aria-label="Default select example" style="min-width: 200px; max-width: 500px; ">
+          <option selected></option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+        <div class="d-flex">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </div>
+      </div>
+    </nav>
+<br>
     {% if Student_exists_msg is None %}
-      <table class="table table-dark">
+      <table class="table table-dark table-dark table-striped table-hover ">
           <thead>
             <tr>
               <th>Name</th>
+              <th>Grade</th>
               <th>Stream</th>
               <th>Marks</th>
               <th>Remarks</th>
@@ -41,16 +62,19 @@
             {% for item in ListSt%}
               <tr class="table-dark">
                 <td>{{ item.Name }}</td>
+                <td>{{item.Grade}}</td>
                 {% if item.Stream == 1 %}
                 <td>Science</td>
                 {% else %}
                 <td>Management</td>
                 {% endif %}
                 <td>{{ item.MarksAch }}</td>
-                {% if item.MarksAch >= PMarks %}
+                {% if item.Pass %}
                 <td><span class="badge bg-success">Pass</span></td>
-                {% else %}
+                {% elif item.Pass == False %}
                 <td><span class="badge rounded-pill bg-danger">Fail</span>
+                {% else %}
+                <td><span class="badge rounded-pill bg-warning text-dark">Not Submitted</span>
                 </td>
                 {% endif %}
               </tr>

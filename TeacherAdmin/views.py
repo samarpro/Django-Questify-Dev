@@ -1,18 +1,41 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from django.http import JsonResponse
 from .forms import AdminInfoForms
 from .models import AdminInfo
+from validator.models import CustomUser
 from pathlib import Path
 from django.conf import settings
 from StPage.models import StInfoModels
 from docx import Document
+from os import remove
+from datetime import datetime
 # Create your views here.
 def dashboard(req):
     user=req.user
+    # this is dict is used to store which object is active of different grade
+    context_of_object ={}
     if not user.is_anonymous:
         AdminInfo_objects = AdminInfo.objects.filter(user=user)
+        St_object_Pass = len(StInfoModels.objects.filter(Pass=True,User=user))
+        St_object_Total = len(StInfoModels.objects.filter(User=user))
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+        for grade in AdminInfo_objects.values('FOR_CLASS').distinct().order_by('FOR_CLASS'):
+            # The Admin Info object which is currently active.
+            # since last one is always taken as active 
+            str_grade =str(grade['FOR_CLASS'])
+            if str_grade in req.session:
+                id_adminInfo = req.session[str_grade]
+                active_admin_object = AdminInfo_objects.get(id=id_adminInfo) 
+            else:
+                active_admin_object = AdminInfo_objects.filter(FOR_CLASS = grade['FOR_CLASS']).last() 
+                
+            context_of_object[f"Grade{grade['FOR_CLASS']}"]=active_admin_object
         context={
             "AdminInfo_objects": AdminInfo_objects,
+            'current_time': current_time,
+            'Total_student':St_object_Total,
+            'Pass_student':St_object_Pass,
+            'active_list':context_of_object,
         }
         return render(req,"TeacherAdmin/dashboard.html",context)
     else:
@@ -32,7 +55,6 @@ def uploadInfo(req):
             for_class=form.cleaned_data['FOR_CLASS']
             start_time =form.cleaned_data['Start_time']
             end_time =form.cleaned_data['End_time']
-            print("Printing Start and End Date: ",start_time,end_time)
             # ActUser = User.objects.get(username=username)
 
             # opening a new document
@@ -77,7 +99,6 @@ def uploadInfo(req):
                 err="No of Question required is less than Found in WordFile"        
         else:
             err = "Form Invalid. Please try again."
-            print(form.errors)
             # gets redirected to upload Page with errors.
         return render(req,"TeacherAdmin/upload.html",context={'err':err,'form':form,'msg':msg})
     else:
@@ -96,11 +117,11 @@ def show_result(req):
     if not user.is_anonymous:
         AdminUser = AdminInfo.objects.filter(user=user).last()
         if AdminUser is not None:
+            # all the student of specific user.
             List_St = StInfoModels.objects.filter(User=user)
             if List_St.exists():
                 context={
                     "ListSt":List_St,
-                    "PMarks": AdminUser.PASSMARKS, #type:ignore,
                     "Student_exists_msg": None
                 }
             else:
@@ -118,10 +139,14 @@ def show_result(req):
     
 
 def delete_row(req,id_of_row):
-    print("Deleting")
     model_row = AdminInfo.objects.get(id=int(id_of_row))
+    path_folder = Path(settings.MEDIA_ROOT) / model_row.FILENAME.name
+    try:
+        remove(path_folder)
+    except Exception as e:
+        return JsonResponse({'msg':False})
+
     model_row.delete()
-    print("Done")
     return JsonResponse({'msg':True})
 
 
@@ -213,12 +238,12 @@ def edit_object_info(req,id_object):
 
         else:
             err = "Form Invalid. Please try again."
-            print(form.errors)  # delete
             # gets redirected to upload Page with errors.
         return render(req,"TeacherAdmin/edit.html",context={'err':err,'form':form,'msg':msg})
     else:
         form = AdminInfoForms()
         # setting up initial value for forms
+        # since we need to show value at beginning when req.method is not POST 
         form.fields['FOR_CLASS'].initial = Obj.FOR_CLASS
         form.fields['INSNAME'].initial = Obj.INSNAME
         form.fields['FULLMARKS'].initial = Obj.FULLMARKS
@@ -236,3 +261,11 @@ def edit_object_info(req,id_object):
         return render(req,"TeacherAdmin/edit.html",context)
 
     return render(req,'TeacherAdmin/edit.html')
+
+
+def change_active_portal(req,id_object,class_id):
+    user_object = CustomUser.objects.get(username=str(req.user))
+    user_object.active_portals[class_id] = id_object  #type:ignore
+    user_object.save()
+    req.session[str(class_id)] = id_object
+    return JsonResponse({'msg':id_object,'class':class_id})

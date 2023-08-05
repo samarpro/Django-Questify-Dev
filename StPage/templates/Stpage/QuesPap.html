@@ -244,7 +244,6 @@
     </Footer>
     <script>
         var correctAnswers = {{ ANS }};
-        console.log(correctAnswers)
         document.getElementById('questionForm').addEventListener('submit', function (e) {
             e.preventDefault();
             var MARKS_OBTAINED = 0;
@@ -259,9 +258,8 @@
                 }
                 counter++;
             }
-            console.log(MARKS_OBTAINED);
             BIN_DATA = MARKS_OBTAINED.toString(2);    
-            // window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA));
+            window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA)+"&inscode={{InsCode}}");
         });
     </script>
 </body>
