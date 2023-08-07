@@ -75,28 +75,59 @@ def WordFileHandler(FilePath,Quesno,Image_Dict):
 
 
 def StLogin(req):
-    req.session['StName'] = req.POST.get('Name')
-    req.session["Grade"]= req.POST.get('Grade')
     err=""
     if req.method =="POST":
-        form = StLoginForm(req.POST)
-        if form.is_valid():
-            # Getting Code Name
-            AdminCode = form.cleaned_data['AdInsCode'] 
-            Grade = form.cleaned_data['Grade']
-            # filtered User -> Teacher Admin User Exixts
-            # checking wheather or not use exists
-            FiltUser = CustomUser.objects.filter(first_name=AdminCode)
-            # Checks wheather or not institute code exist
-            if FiltUser.exists():
-                FormInst=form.save(commit=False)
-                FormInst.User_id= FiltUser.last().id #type:ignore
-                form.save()
-                req.session['STUDENT_CHECKED'] = True
-                req.session.save()
-                return redirect(f"/{AdminCode}/{Grade}")
+        req.session['StName'] = req.POST.get('Name')
+        Grade = req.POST.get('Grade')
+        req.session["Grade"]= Grade
+        InstituteCode = req.POST.get('AdInsCode')
+        userName= CustomUser.objects.filter(first_name=InstituteCode).last() # this last doesn't make sense cuz first_name is also unique
+        if userName is None:
+            context={'err':"Alert: Institution code didn't matched. Try contacting Admin'",'code':404,'err_msg_text':"Admin Portal not found. Try again"       }
+            return render(req,"StPage/error.html",context)
+        else :pass
+            # userName is user object
+        if Grade in userName.active_portals: #type:ignore
+            try:
+                AdminInfo = userName.admininfo_set.get(id=int(userName.active_portals[str(req.session['Grade'])])) #type:ignore
+            except:
+                context={'err':"Alert: The admin is missing or encountered an error. Please check Institution Code and Grade.'",'code':404,'err_msg_text':"Page not found. Try again"}
+                return render(req,"StPage/error.html",context)
+        else:
+            AdminInfo=userName.admininfo_set.filter(FOR_CLASS=Grade).last()  # type:ignore
+        if AdminInfo is not None: 
+            Instant_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+            Model_time_start = AdminInfo.Start_time.strftime('%Y-%m-%d %H:%M')
+            Model_time_end = AdminInfo.End_time.strftime('%Y-%m-%d %H:%M')
+            if Instant_time >= Model_time_start and Instant_time <= Model_time_end:
+                    form = StLoginForm(req.POST)
+                    if form.is_valid():
+                        # Getting Code Name
+                        AdminCode = form.cleaned_data['AdInsCode'] 
+                        Grade = form.cleaned_data['Grade']
+                        # filtered User -> Teacher Admin User Exixts
+                        # checking wheather or not use exists
+                        FiltUser = CustomUser.objects.filter(first_name=AdminCode)
+                        # Checks wheather or not institute code exist
+                        if FiltUser.exists():
+                            FormInst=form.save(commit=False)
+                            FormInst.User_id= FiltUser.last().id #type:ignore
+                            form.save()
+                            req.session['STUDENT_CHECKED'] = True
+                            req.session.save()
+                            return redirect(f"/{AdminCode}/{Grade}")
+                        else:
+                            err="Institute Code not found."                
             else:
-                err="Institute Code not found."
+                context={
+                            'err': "You should login with in provided time limit.",
+                            'code':"Time Limit ",
+                            'err_msg_text':f"Portal opens at {Model_time_start} and closes at {Model_time_end}."
+                        }
+                return render(req,"StPage/error.html",context)
+        else:
+            context={'err':"Alert: The admin is missing or encountered an error. Please check Institution Code and Grade.'",'code':404,'err_msg_text':"Page not found. Try again"       }
+            return render(req,"StPage/error.html",context)
     form = StLoginForm()
     context={
         'form':form,
@@ -119,7 +150,7 @@ def QuesHandler(req,InstituteCode,Grade):
         userName= CustomUser.objects.filter(first_name=InstituteCode).last() # this last doesn't make sense cuz first_name is also unique
         # userName is user object
         if Grade in userName.active_portals: #type:ignore
-            AdminInfo=userName.admininfo_set.get(id=[req.session[str(Grade)]]) #type:ignore
+            AdminInfo=userName.admininfo_set.get(id=req.session[str(Grade)]) #type:ignore
         else:
             AdminInfo=userName.admininfo_set.filter(FOR_CLASS=Grade).last()  # type:ignore
 
@@ -194,6 +225,7 @@ def empty_favicon_view(request):
 def Submition(req):
     Bin_data=req.GET.get('data')
     InsCode = req.GET.get('inscode')
+    print(dict(req.GET))
     int_data=int(Bin_data,2)
     StName = req.session.get('StName')
     Grade = req.session['Grade'] 
@@ -201,6 +233,7 @@ def Submition(req):
     StObj.MarksAch=int_data
     # since firstname is also unique, using last or not using doesn't matter
     user_obj = CustomUser.objects.filter(first_name=InsCode).last() #type:ignore
+    print(CustomUser.objects.values('first_name'),InsCode)
     user_obj_activePortal_db = user_obj.active_portals #type:ignore
     if Grade in user_obj_activePortal_db:
         Admin_set_passmarks = user_obj.admininfo_set.get(id=user_obj_activePortal_db[Grade]).PASSMARKS  # type:ignore 
@@ -212,5 +245,5 @@ def Submition(req):
     else:
         StObj.Pass = False
     StObj.save()
-    # return HttpResponseRedirect("/")
-    return HttpResponseRedirect("")
+    print("Done. Worked...")
+    return HttpResponseRedirect("/")

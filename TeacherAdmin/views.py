@@ -140,10 +140,19 @@ def show_result(req):
 
 def delete_row(req,id_of_row):
     model_row = AdminInfo.objects.get(id=int(id_of_row))
-    path_folder = Path(settings.MEDIA_ROOT) / model_row.FILENAME.name
+    path_wordFile = Path(settings.MEDIA_ROOT) / model_row.FILENAME.name
+    print(path_wordFile)
+    """
+    Institution name--{key_of_dict}
+    """
+    # model row -> object of admin info
+
     try:
-        remove(path_folder)
+        for val in model_row.IMAGES_DICT.values() :
+            remove(Path(settings.MEDIA_ROOT)/"Admin_Images"/val)
+        remove(path_wordFile)
     except Exception as e:
+        print(e)
         return JsonResponse({'msg':False})
 
     model_row.delete()
@@ -264,6 +273,8 @@ def edit_object_info(req,id_object):
 
 
 def change_active_portal(req,id_object,class_id):
+
+    """Takes ID of object and class of that object in DB."""
     user_object = CustomUser.objects.get(username=str(req.user))
     user_object.active_portals[class_id] = id_object  #type:ignore
     user_object.save()

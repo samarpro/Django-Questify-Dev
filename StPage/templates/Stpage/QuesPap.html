@@ -258,8 +258,10 @@
                 }
                 counter++;
             }
-            BIN_DATA = MARKS_OBTAINED.toString(2);    
-            window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA)+"&inscode={{InsCode}}");
+            BIN_DATA = MARKS_OBTAINED.toString(2);  
+            var InsCode = '{{InsCode}}'  
+            console.log(InsCode)
+            window.location.replace("/Submit/?data="+ encodeURIComponent(BIN_DATA)+"&inscode="+InsCode);
         });
     </script>
 </body>

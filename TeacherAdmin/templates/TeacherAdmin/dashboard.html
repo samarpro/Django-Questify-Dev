@@ -51,7 +51,33 @@
 {% endblock %}
 
 {% block content %}
+
+
+
 <div class="main">
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+      
+                <!-- Modal Header -->
+                <div class="modal-header">
+                <h4 class="modal-title text-dark">Active Portal Changed</h4>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+        
+                <!-- Modal body -->
+                <div class="modal-body text-dark ">
+                New Portal has been set. Refrech the page to see the changes.
+                </div>
+        
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick='location.reload()'>Refresh Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <h1>Welcome <span class="span">@{{user.username}}</span> .</h1>
     <br><br>
     <!-- code for cards -->
@@ -110,7 +136,7 @@
                             <button type="button" class="btn btn-danger delete-btn"
                                 data-row_btn_id={{object.id}}>Delete</button> &nbsp
                             <button type="button" class="btn btn-info select-btn"
-                                data-row_btn_id={{object.id}}>Select</button>
+                                data-row_btn_id={{object.id}} data-toggle="modal" data-target="#myModal" >Select</button>
                         </td>
                 </tr>
                 {% endfor %}
@@ -191,10 +217,11 @@
 
     document.querySelectorAll(".select-btn").forEach(selBtn=>{
         selBtn.addEventListener("click",()=>{
+            // row id represents id of object in db
             const rowId = selBtn.dataset.row_btn_id
+            // row_class represnts class of that object whoes id is rowId
             row_class = document.getElementById("class_"+rowId)
-            console.log(row_class.textContent)
-            garde_string = "hee 12".split(" ")
+            garde_string = row_class.innerText.split(" ")
             change_active_portals(parseInt(rowId),parseInt(garde_string[1]))
         })
     })
